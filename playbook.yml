@@ -1,0 +1,6 @@
+---
+- name: Настройка рабочей станции
+  hosts: workstation
+  become: yes
+  roles:
+          - workstation

@@ -1,0 +1,41 @@
+---
+- name: Обновляем кэш (только на Debian/Ubuntu)
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Устанавливаем нужное ПО
+  package:
+    name:
+      - git
+      - curl
+      - wget
+      - htop
+      - tmux
+      - tree
+      - zsh
+      - neovim
+      - docker.io
+      - python3-pip
+      - ca-certificates
+    state: present
+
+- name: Добавляем пользователя в группу docker
+  user:
+    name: "{{ ansible_user_id }}"
+    groups: docker
+    append: yes
+  when: ansible_os_family == "Debian"
+
+- name: Устанавливаем Oh My Zsh
+  shell: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended
+  args:
+    creates: "{{ ansible_env.HOME }}/.oh-my-zsh"
+  become: no
+
+- name: Меняем дефолтный шелл на zsh
+  user:
+    name: "{{ ansible_user_id }}"
+    shell: /usr/bin/zsh
+
